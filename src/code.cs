@@ -100,5 +100,7 @@ class Program
     {
         var result = new Solver(N, S, T, numbers).Solve();
         System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+        result = new Solver(N, 3, 2, numbers).Solve();
+        System.Console.Out.WriteLine ("The result for S = 3, T = 2 is: {0}", string.Join(", ", result.Select(i => i.ToString())));
     }
 }
