@@ -96,7 +96,6 @@ class Program
     static int S = 2;
     static int T = 3;
     static int[] numbers = new int[N] { 1, 6, 8, 7, 6, 2, 1, 8 };
-    static int maxPoint = -1;
 
     static void Main(string[] args)
     {
