@@ -35,7 +35,7 @@ class Solver
     public List<Value> Solve()
     {
         CountInitValues();
-        InnerSolve(values, new List<Value>(), 0, T);
+        InnerSolve(values, new List<Value>(), 0, S);
         return result;
     }
 
