@@ -10,6 +10,7 @@ class Value
         this.idx = idx;
         this.num = num;
     }
+    public override string ToString() { return $"({idx}, {num})"; }
 }
 
 class Program
@@ -26,10 +27,15 @@ class Program
     {
         CountInitValues();
         Solve(values, new List<Value>(), 0, T);
+        System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
     }
 
     static void Solve(List<Value> remaining, List<Value> numSoFar, int pointSoFar, int StepsRemain)
     {
+        System.Console.Out.WriteLine ("remaining   : {0}", string.Join(", ", remaining.Select(i => i.ToString())));
+        System.Console.Out.WriteLine ("numSoFar    : {0}", string.Join(", ", numSoFar.Select(i => i.ToString())));
+        System.Console.Out.WriteLine ("pointSoFar  : {0}", pointSoFar);
+        System.Console.Out.WriteLine ("StepsRemain : {0}", StepsRemain);
         if (remaining.Count == 0 || StepsRemain == 0)
         {
             if (pointSoFar > maxPoint)
