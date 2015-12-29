@@ -3,8 +3,8 @@ using System.Linq;
 
 class Value
 {
-    public int idx = -1;
-    public int num = -1;
+    public int idx;
+    public int num;
     public Value(int idx, int num)
     {
         this.idx = idx;
