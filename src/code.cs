@@ -13,7 +13,7 @@ class Value
     public override string ToString() { return $"({idx}, {num})"; }
 }
 
-class Program
+class Solver
 {
     const int N = 8;
     static int S = 2;
@@ -23,14 +23,14 @@ class Program
     static int maxPoint = -1;
     static List<Value> result;
 
-    static void Main(string[] args)
+    public List<Value> Solve(List<Value> numSoFar, int pointSoFar, int StepsRemain)
     {
         CountInitValues();
-        Solve(values, new List<Value>(), 0, T);
-        System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+        InnerSolve(values, numSoFar, pointSoFar, StepsRemain);
+        return result;
     }
 
-    static void Solve(List<Value> remaining, List<Value> numSoFar, int pointSoFar, int StepsRemain)
+    static void InnerSolve(List<Value> remaining, List<Value> numSoFar, int pointSoFar, int StepsRemain)
     {
         System.Console.Out.WriteLine ("remaining   : {0}", string.Join(", ", remaining.Select(i => i.ToString())));
         System.Console.Out.WriteLine ("numSoFar    : {0}", string.Join(", ", numSoFar.Select(i => i.ToString())));
@@ -55,7 +55,7 @@ class Program
                 newRemaining.AddRange(remaining.Skip(i + T));
                 int ujPont = pointSoFar + remaining[i].num;
                 int ujLepes = StepsRemain - 1;
-                Solve(newRemaining, newNum, ujPont, ujLepes);
+                InnerSolve(newRemaining, newNum, ujPont, ujLepes);
                 newNum.RemoveAt(newNum.Count - 1);
             }
         }
@@ -78,5 +78,21 @@ class Program
             newValue += numbers[startIndex + j];
         }
         return newValue;
+    }
+}
+
+class Program
+{
+    const int N = 8;
+    static int S = 2;
+    static int T = 3;
+    static int[] numbers = new int[N] { 1, 6, 8, 7, 6, 2, 1, 8 };
+    static List<Value> values = new List<Value>();
+    static int maxPoint = -1;
+
+    static void Main(string[] args)
+    {
+        var result = new Solver().Solve(new List<Value>(), 0, T);
+        System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
     }
 }
