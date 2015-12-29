@@ -1,0 +1,197 @@
+#+OPTIONS: toc:nil
+
+* General
+** Include usings
+
+   This helps others when reviewing the code.
+
+ #+BEGIN_SRC csharp
+   using System.Collections.Generic;
+   using System.Linq;
+ #+END_SRC
+** Include the results when you run the program
+
+   This also helps reviewing, but more importantly: it helps you
+   testing.  Pressing "Run" and seeing what the results are is quicker
+   than attaching the debugger and needing a break point to check.
+
+#+BEGIN_SRC csharp
+  class Value
+  {
+      public override string ToString() { return $"({idx}, {num})"; }
+  }
+#+END_SRC
+
+#+BEGIN_SRC csharp
+  static void Main(string[] args)
+  {
+      CountInitValues();
+      Solve(values, new List<Value>(), 0, T);
+      System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+  }
+#+END_SRC
+
+* Names
+** Use descriptive names for fields and variables with large scopes
+
+   Example: N, S and T are clear if you have the problem description
+   at hand, but not when you are looking at them in the code itself.
+   You could change them to =numbers=, =maxMoves= and =numbersToTake=,
+   so that their meaning is clear at one glance.
+
+* Write smaller functions
+** Split CountInitValues()
+
+#+BEGIN_SRC csharp
+  static void CountInitValues()
+  {
+      for (int i = 0; i < N - T + 1; i++)
+      {
+          Value ee = new Value(i, CountValuesFrom(i));
+          values.Add(ee);
+      }
+  }
+
+  static int CountValuesFrom(int startIndex)
+  {
+      int newValue = 0;
+      for (int j = 0; j < T; j++)
+      {
+          newValue += numbers[startIndex + j];
+      }
+  }
+#+END_SRC
+
+* Bug
+** You use T for the number of steps, instead of S
+
+   This gives no different result in the example, because after 2
+   steps, you can't take another set of 3 values any more.  But in
+   different sets, this will give false results.
+
+#+BEGIN_SRC csharp
+  Solve(values, new List<Value>(), 0, T);
+#+END_SRC
+
+should be
+
+#+BEGIN_SRC csharp
+  Solve(values, new List<Value>(), 0, S);
+#+END_SRC
+
+* An Object Oriented issue
+** Solver can be a separate class with non-static fields
+
+   If you extract a class =Solver=, and use non-static fields, you can
+   create more of them in a testing method (or in =Main()=), give them
+   different values to calculate results, and test those results.
+
+#+BEGIN_SRC csharp
+  class Solver
+  {
+      int N;
+      int S;
+      int T;
+      int[] numbers;
+
+      List<Value> values = new List<Value>();
+      int maxPoint = -1;
+      List<Value> result;
+
+      public Solver(int N, int S, int T, int[] numbers)
+      {
+          this.N = N;
+          this.S = S;
+          this.T = T;
+          this.numbers = numbers;
+      }
+
+      public List<Value> Run()
+      {
+          CountInitValues();
+          Solve(values, new List<Value>(), 0, S);
+          return result;
+      }
+
+      void InnerSolve(List<Value> remaining, List<Value> numSoFar, int pointSoFar, int StepsRemain)
+      {
+          // ...
+      }
+
+      void CountInitValues()
+      {
+          // ...
+      }
+  }
+#+END_SRC
+
+You can call the test like this, then:
+
+#+BEGIN_SRC csharp
+  class Program
+  {
+      const int N = 8;
+      static int S = 2;
+      static int T = 3;
+      static int[] numbers = new int[N] { 1, 6, 8, 7, 6, 2, 1, 8 };
+
+      static void Main(string[] args)
+      {
+          var result = new Solver(N, S, T, numbers).Solve();
+          System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+      }
+  }
+#+END_SRC
+
+But also like this:
+
+#+BEGIN_SRC csharp
+  class Program
+  {
+      const int N = 8;
+      static int S = 2;
+      static int T = 3;
+      static int[] numbers = new int[N] { 1, 6, 8, 7, 6, 2, 1, 8 };
+
+      static void Main(string[] args)
+      {
+          var result = new Solver(N, S, T, numbers).Solve();
+          System.Console.Out.WriteLine ("The result for S = 2, T = 3 is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+          result = new Solver(N, 3, 2, numbers).Solve();
+          System.Console.Out.WriteLine ("The result for S = 3, T = 2 is: {0}", string.Join(", ", result.Select(i => i.ToString())));
+      }
+  }
+#+END_SRC
+
+* Optimizing the algorithm
+** It does not matter in which order you take groups
+
+   If you pick numbers from indices (2, 3, 4), and then from indices
+   (6, 7, 8), you will get the same result as when you first pick (6,
+   7, 8) and then (2, 3, 4).  Also, when picking (1, 2, 3) then (4, 5,
+   6), you already have the same number of points as when picking (2,
+   3, 4) and then (1, 5, 6).
+
+   Knowing this, you can skip tests that try to take numbers from the
+   left of where you took numbers:
+
+#+BEGIN_SRC csharp
+  void Solve(/*...*/)
+  {
+      List<Value> newRemaining = new List<Value>();
+      newNum.Add(remaining[i]);
+      newRemaining.AddRange(remaining.Take(i - T));
+      newRemaining.AddRange(remaining.Skip(i + T));
+  }
+#+END_SRC
+
+can now be
+
+#+BEGIN_SRC csharp
+  void Solve(/*...*/)
+  {
+      List<Value> newRemaining = new List<Value>();
+      newNum.Add(remaining[i]);
+      newRemaining.AddRange(remaining.Skip(i + T));
+  }
+#+END_SRC
