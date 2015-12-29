@@ -32,10 +32,10 @@ class Solver
         this.numbers = numbers;
     }
 
-    public List<Value> Solve(List<Value> numSoFar, int pointSoFar, int StepsRemain)
+    public List<Value> Solve()
     {
         CountInitValues();
-        InnerSolve(values, numSoFar, pointSoFar, StepsRemain);
+        InnerSolve(values, new List<Value>(), 0, T);
         return result;
     }
 
@@ -96,12 +96,11 @@ class Program
     static int S = 2;
     static int T = 3;
     static int[] numbers = new int[N] { 1, 6, 8, 7, 6, 2, 1, 8 };
-    static List<Value> values = new List<Value>();
     static int maxPoint = -1;
 
     static void Main(string[] args)
     {
-        var result = new Solver(N, S, T, numbers).Solve(new List<Value>(), 0, T);
+        var result = new Solver(N, S, T, numbers).Solve();
         System.Console.Out.WriteLine ("The result is: {0}", string.Join(", ", result.Select(i => i.ToString())));
     }
 }
