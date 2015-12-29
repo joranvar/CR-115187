@@ -60,7 +60,6 @@ class Solver
             {
                 List<Value> newRemaining = new List<Value>();
                 newNum.Add(remaining[i]);
-                newRemaining.AddRange(remaining.Take(i - T));
                 newRemaining.AddRange(remaining.Skip(i + T));
                 int ujPont = pointSoFar + remaining[i].num;
                 int ujLepes = StepsRemain - 1;
