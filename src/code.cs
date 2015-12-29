@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 class Value
 {
     public int idx = -1;
