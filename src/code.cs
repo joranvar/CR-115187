@@ -65,13 +65,18 @@ class Program
     {
         for (int i = 0; i < N - T + 1; i++)
         {
-            int newValue = 0;
-            for (int j = 0; j < T; j++)
-            {
-                newValue += numbers[i + j];
-            }
-            Value ee = new Value(i, newValue);
+            Value ee = new Value(i, CountValuesFrom(i));
             values.Add(ee);
         }
+    }
+
+    static int CountValuesFrom(int startIndex)
+    {
+        int newValue = 0;
+        for (int j = 0; j < T; j++)
+        {
+            newValue += numbers[startIndex + j];
+        }
+        return newValue;
     }
 }
